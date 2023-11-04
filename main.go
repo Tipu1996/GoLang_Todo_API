@@ -4,8 +4,11 @@ import (
 	"context"
 	"example/libraryAPI/routes"
 	"fmt"
+	"log"
+	"os"
 
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -13,9 +16,16 @@ import (
 )
 
 func main() {
-	// Use the SetServerAPIOptions() method to set the Stable API version to 1
+	if err := godotenv.Load(); err != nil {
+		log.Fatalf("Error loading .env file: %v", err)
+	}
+
+	// Now you can access the environment variables as you normally would
+	mongodb_uri := os.Getenv("MONGODB_URI")
+
 	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
-	opts := options.Client().ApplyURI("mongodb+srv://tipuGoLangTodo:pttgA2klbFIDch8J@golang.opihjt8.mongodb.net/?retryWrites=true&w=majority").SetServerAPIOptions(serverAPI)
+
+	opts := options.Client().ApplyURI(mongodb_uri).SetServerAPIOptions(serverAPI)
 	// Create a new client and connect to the server
 	client, err := mongo.Connect(context.TODO(), opts)
 	if err != nil {
